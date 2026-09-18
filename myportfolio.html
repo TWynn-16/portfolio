@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tyeven Wynn — Portfolio</title>
+<style>
+  /* -----------------------------
+     Colors (same as your Tkinter version)
+  ----------------------------- */
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-hover: #263449;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-dark: #0284c7;
+    --border: rgba(148, 163, 184, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Subtle glow behind the hero */
+  body::before {
+    content: "";
+    position: fixed;
+    top: -220px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 950px;
+    height: 520px;
+    background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.08), transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  ::selection { background: var(--accent); color: #082f49; }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent-dark); }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+  section { scroll-margin-top: 90px; } /* offset for the sticky navbar */
+
+  /* -----------------------------
+     Navigation Bar
+  ----------------------------- */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar-inner {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo { font-size: 15px; font-weight: 700; letter-spacing: 1.5px; color: var(--text); text-decoration: none; }
+  .logo span { color: var(--accent); }
+
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 15px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: color 0.2s ease;
+  }
+  .nav-links a:hover,
+  .nav-links a.active { color: var(--accent); }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .hamburger span {
+    width: 22px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* -----------------------------
+     Hero Section
+  ----------------------------- */
+  .hero { padding: 110px 0 100px; }
+  .hello { color: var(--accent); font-size: 14px; font-weight: 700; letter-spacing: 3px; }
+  .hero h1 { font-size: 52px; font-weight: 700; margin-top: 6px; line-height: 1.1; }
+  .role { font-size: 20px; color: var(--muted); margin-top: 12px; }
+  .blurb { color: var(--muted); max-width: 650px; margin-top: 18px; }
+
+  .btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+  .btn {
+    display: inline-block;
+    padding: 13px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    border: 0;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary { background: var(--accent); color: #082f49; }
+  .btn-primary:hover {
+    background: var(--accent-dark);
+    color: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(56, 189, 248, 0.25);
+  }
+  .btn-secondary { background: var(--card); color: var(--text); }
+  .btn-secondary:hover { background: var(--card-hover); transform: translateY(-2px); }
+
+  /* -----------------------------
+     Section titles
+  ----------------------------- */
+  .section-head { padding-top: 80px; margin-bottom: 32px; }
+  .section-title { font-size: 30px; font-weight: 700; }
+  .section-subtitle { color: var(--muted); margin-top: 8px; }
+
+  .card { background: var(--card); border-radius: 12px; padding: 35px; }
+
+  /* -----------------------------
+     About
+  ----------------------------- */
+  .about-text p { color: var(--muted); }
+  .about-text p + p { margin-top: 18px; }
+
+  /* -----------------------------
+     Skills & Projects grid
+  ----------------------------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+  .tile {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 26px 24px;
+    transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .tile:hover {
+    background: var(--card-hover);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  }
+  .tile h3 { font-size: 17px; font-weight: 700; }
+  .tile .category { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .tile .desc { color: var(--muted); font-size: 14px; margin-top: 10px; }
+  .tile .tech { color: var(--accent); font-size: 13px; font-weight: 700; margin-top: 20px; }
+
+  /* -----------------------------
+     Contact
+  ----------------------------- */
+  .contact-card { margin-bottom: 80px; }
+  .contact-card h2 { font-size: 25px; font-weight: 700; }
+  .contact-list { list-style: none; margin-top: 18px; }
+  .contact-list li { color: var(--muted); padding: 4px 0; }
+  .contact-list a { color: var(--muted); text-decoration: none; transition: color 0.2s ease; }
+  .contact-list a:hover { color: var(--accent); }
+
+  /* -----------------------------
+     Footer
+  ----------------------------- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 26px 0 30px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* -----------------------------
+     Fade-in on scroll
+  ----------------------------- */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .grid > .reveal:nth-child(3n+2) { transition-delay: 0.08s; }
+  .grid > .reveal:nth-child(3n)   { transition-delay: 0.16s; }
+
+  /* -----------------------------
+     Mobile
+  ----------------------------- */
+  @media (max-width: 820px) {
+    .hamburger { display: flex; }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px 18px;
+    }
+    .nav-links.open { display: flex; }
+    .hero h1 { font-size: 40px; }
+    .role { font-size: 17px; }
+  }
+  @media (max-width: 560px) {
+    .container { padding: 0 22px; }
+    .hero { padding: 80px 0 70px; }
+    .hero h1 { font-size: 34px; }
+    .section-head { padding-top: 60px; }
+    .card { padding: 26px 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+<noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="#home" class="logo">MY <span>PORTFOLIO</span></a>
+    <div class="nav-links" id="navLinks">
+      <a href="#home" class="active">Home</a>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<main>
+  <!-- Hero -->
+  <section id="home" class="hero">
+    <div class="container">
+      <p class="hello reveal">HELLO, I'M</p>
+      <h1 class="reveal">Tyeven Wynn</h1>
+      <p class="role reveal">Computer Programming Student<br>Aspiring Software Developer</p>
+      <p class="blurb reveal">I enjoy building applications, learning new technologies, and turning ideas into working software.</p>
+      <div class="btn-row reveal">
+        <a href="#contact" class="btn btn-primary">Contact Me</a>
+        <a href="#projects" class="btn btn-secondary">View Projects</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2 class="section-title">About Me</h2>
+        <p class="section-subtitle">A little bit about who I am.</p>
+      </div>
+      <div class="card about-text reveal">
+        <p>I'm currently studying Computer Programming and building my skills in software development.</p>
+        <p>I'm interested in Python, C#, databases, user interfaces, and learning how real-world applications are built.</p>
+        <p>My goal is to continue developing my programming skills and eventually work as a software developer.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2 class="section-title">Skills</h2>
+        <p class="section-subtitle">Technologies and tools I'm learning.</p>
+      </div>
+      <div class="grid">
+        <div class="tile reveal"><h3>Python</h3><p class="category">Programming</p></div>
+        <div class="tile reveal"><h3>C#</h3><p class="category">Programming</p></div>
+        <div class="tile reveal"><h3>SQL / MySQL</h3><p class="category">Database</p></div>
+        <div class="tile reveal"><h3>Tkinter</h3><p class="category">GUI Development</p></div>
+        <div class="tile reveal"><h3>GitHub</h3><p class="category">Version Control</p></div>
+        <div class="tile reveal"><h3>HTML / CSS</h3><p class="category">Web Development</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2 class="section-title">Projects</h2>
+        <p class="section-subtitle">Some of the things I've worked on.</p>
+      </div>
+      <div class="grid">
+        <div class="tile reveal">
+          <h3>Student Registration App</h3>
+          <p class="desc">A Python GUI application for registering and managing student information.</p>
+          <p class="tech">Python • Tkinter</p>
+        </div>
+        <div class="tile reveal">
+          <h3>My Guitar Shop Database</h3>
+          <p class="desc">A MySQL database project using queries, joins, filtering, and aggregation.</p>
+          <p class="tech">MySQL • SQL</p>
+        </div>
+        <div class="tile reveal">
+          <h3>Portfolio Website</h3>
+          <p class="desc">A personal portfolio showcasing my skills, projects, education, and contact information.</p>
+          <p class="tech">HTML • CSS • GitHub</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2 class="section-title">Contact</h2>
+        <p class="section-subtitle">Interested in working together?</p>
+      </div>
+      <div class="card contact-card reveal">
+        <h2>Let's connect.</h2>
+        <ul class="contact-list">
+          <li>Email: <a href="mailto:wynntye@yahoo.com">wynntye@yahoo.com</a></li>
+          <li>GitHub: <a href="https://github.com/TWynn-16" target="_blank" rel="noopener">github.com/TWynn-16</a></li>
+          <li>LinkedIn: <a href="https://www.linkedin.com/in/tyeven-wynn-272761302/" target="_blank" rel="noopener">linkedin.com/in/tyeven-wynn-272761302</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">© 2026 Tyeven Wynn • Built with HTML &amp; CSS</div>
+</footer>
+
+<script>
+  // Mobile menu toggle
+  const hamburger = document.getElementById("hamburger");
+  const navLinks = document.getElementById("navLinks");
+
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("open");
+    navLinks.classList.toggle("open");
+  });
+
+  navLinks.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      hamburger.classList.remove("open");
+      navLinks.classList.remove("open");
+    });
+  });
+
+  // Highlight the active nav link while scrolling
+  const sections = document.querySelectorAll("section[id]");
+  const links = document.querySelectorAll(".nav-links a");
+
+  function updateActiveLink() {
+    let current = "home";
+    sections.forEach((section) => {
+      if (window.scrollY >= section.offsetTop - 130) current = section.id;
+    });
+    // Make sure "Contact" activates at the very bottom of the page
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 40) {
+      current = "contact";
+    }
+    links.forEach((link) => {
+      link.classList.toggle("active", link.getAttribute("href") === "#" + current);
+    });
+  }
+  window.addEventListener("scroll", updateActiveLink);
+  updateActiveLink();
+
+  // Fade-in animation when elements scroll into view
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+  document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+</script>
+
+</body>
+</html>
